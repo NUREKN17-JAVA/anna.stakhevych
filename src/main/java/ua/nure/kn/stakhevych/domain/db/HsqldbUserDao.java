@@ -12,12 +12,14 @@ import java.util.LinkedList;
 
 
 
+
 import ua.nure.kn.stakhevych.domain.User;
 
 
 
 class HsqldbUserDao implements UserDao {
 
+	private static final String CALL_IDENTITY = "call IDENTITY()";
 	private static final String DELETE_QUERY = "DELETE FROM USERS WHERE id = ?";
 	private static final String SELECT_ALL_QUERY = "SELECT id, firstname, lastname, dateofbirth FROM users";
 	private static final String INSERT_QUERY = "INSERT INTO users (firstname, lastname, dateofbirth) VALUES (?, ?, ?)";
@@ -44,7 +46,7 @@ class HsqldbUserDao implements UserDao {
 
 
 	@Override
-	public User create(User user) throws DatabaseException {
+	public User create(User user) throws DataBaseException {
 		// TODO Auto-generated method stub
 		try {
 			Connection connection = connectionFactory.createConnection();
@@ -54,9 +56,9 @@ class HsqldbUserDao implements UserDao {
 			statement.setDate(3, new Date(user.getDateOfBirth().getTime()));
 			int n = statement.executeUpdate();
 			if (n != 1) {
-				throw new DatabaseException("Number of the inserted rows: " + n);
+				throw new DataBaseException("Number of the inserted rows: " + n);
 			}
-			CallableStatement callabelStatement = connection.prepareCall("call IDENTITY()");
+			CallableStatement callabelStatement = connection.prepareCall(CALL_IDENTITY);
 			ResultSet keys = callabelStatement.executeQuery();
 			if (keys.next()) {
 				user.setId(new Long(keys.getLong(1)));
@@ -65,17 +67,18 @@ class HsqldbUserDao implements UserDao {
 			callabelStatement.close();
 			statement.close();
 			connection.close();
-			return user;
-		} catch (DatabaseException e) {
+			//return user;
+		} catch (DataBaseException e) {
 			throw e;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			throw new DatabaseException(e);
+			throw new DataBaseException(e);
 		}
+		return user;
 	}
 
 	@Override
-	public void update(User user) throws DatabaseException {
+	public void update(User user) throws DataBaseException {
 		// TODO Auto-generated method stub
 		try {
             Connection connection = connectionFactory.createConnection();
@@ -88,21 +91,21 @@ class HsqldbUserDao implements UserDao {
             int insertedRows = preparedStatement.executeUpdate();
 
             if (insertedRows != 1) {
-                throw new DatabaseException("Number of inserted rows: " + insertedRows);
+                throw new DataBaseException("Number of inserted rows: " + insertedRows);
             }
 
             connection.close();
             preparedStatement.close();
-        } catch (DatabaseException e) {
-            throw new DatabaseException(e.toString());
+        } catch (DataBaseException e) {
+            throw new DataBaseException(e.toString());
         }catch (SQLException e) {
-            throw new DatabaseException(e.toString());
+            throw new DataBaseException(e.toString());
         }
 
 	}
 
 	@Override
-	public void delete(User user) throws DatabaseException {
+	public void delete(User user) throws DataBaseException {
 		// TODO Auto-generated method stub
 		try {
             Connection connection = connectionFactory.createConnection();
@@ -113,18 +116,18 @@ class HsqldbUserDao implements UserDao {
             int removedRows = statement.executeUpdate();
 
             if (removedRows != 1) {
-                throw new DatabaseException("Number of removed rows: " + removedRows);
+                throw new DataBaseException("Number of removed rows: " + removedRows);
             }
 
             connection.close();
             statement.close();
         } catch (SQLException e) {
-            throw new DatabaseException(e);
+            throw new DataBaseException(e);
         }
 	}
 
 	@Override
-	public User find(Long id) throws DatabaseException {
+	public User find(Long id) throws DataBaseException {
 		// TODO Auto-generated method stub
 		Connection connection = connectionFactory.createConnection();
 		User user = new User();
@@ -143,14 +146,14 @@ class HsqldbUserDao implements UserDao {
 			statement.close();
 			connection.close();
 		} catch (SQLException e) {
-			throw new DatabaseException(e);
+			throw new DataBaseException(e);
 		}
 		return user;
 		
 	}
 
 	@Override
-	public Collection findAll() throws DatabaseException {
+	public Collection findAll() throws DataBaseException {
 		// TODO Auto-generated method stub
 		Collection result = new LinkedList();
 		
@@ -158,20 +161,26 @@ class HsqldbUserDao implements UserDao {
 			Connection connection = connectionFactory.createConnection();
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery(SELECT_ALL_QUERY);
+			
 			while (resultSet.next()) {
+				
 				User user = new User();
 				user.setId(new Long(resultSet.getLong(1)));
 				user.setFirstName(resultSet.getString(2));
 				user.setLastName(resultSet.getString(3));
 				user.setDateOfBirth(resultSet.getDate(4));
+				
 				result.add(user);
 			}
-		} catch (DatabaseException e) {
+			resultSet.close();
+	          statement.close();
+	          connection.close();
+		} catch (DataBaseException e) {
 			// TODO Auto-generated catch block
 			throw e;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			throw new DatabaseException(e);
+			throw new DataBaseException(e);
 		}
 		
 		return result;
