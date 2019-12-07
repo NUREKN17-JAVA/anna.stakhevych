@@ -162,7 +162,8 @@ super.tearDown();
 
             User expectedUser = new User(new Long(1), FIRST_NAME_TEST, LAST_NAME_TEST, DATE_OF_BIRTH);
             mockUserDao.expectAndReturn("create", user, expectedUser);
-                    
+              
+            
             ArrayList<User> users = new ArrayList<User>(this.users);
             users.add(expectedUser);
             mockUserDao.expectAndReturn("findAll", users);
