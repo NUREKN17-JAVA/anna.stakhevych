@@ -13,7 +13,7 @@ public class MockUserDao implements UserDao {
 
 	@Override
 	public User create(User user) throws DataBaseException {
-		Long currentId = new Long (++id);
+		Long currentId = new Long(++id);
 		user.setId(currentId);
 		users.put(currentId, user);
 		return user;
