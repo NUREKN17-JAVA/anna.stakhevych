@@ -22,7 +22,7 @@ public class HsqldbUserDaoTest extends DatabaseTestCase {
 	private static final String MY_LAST_NAME = "Doe";
 	private static final String MY_FIRST_NAME = "John";
 	private static final long ID = 1L;
-	private static final String USER = "sa";
+	private static final String USER = "SA";
     private static final String PASSWORD = "";
     private static final String URL = "jdbc:hsqldb:file:db/Java_Laba_Stakhevych";
     private static final String DRIVER = "org.hsqldb.jdbcDriver";
@@ -53,7 +53,7 @@ public class HsqldbUserDaoTest extends DatabaseTestCase {
 			user = dao.create(user);
 			assertNotNull(user);
 			assertNotNull(user.getId());
-		} catch (DatabaseException e) {
+		} catch (DataBaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.toString());
@@ -65,25 +65,25 @@ public class HsqldbUserDaoTest extends DatabaseTestCase {
 			Collection collection =  dao.findAll();
 			assertNotNull("Collection is null", collection);
 			assertEquals("Collection size", 2, collection.size());
-		} catch (DatabaseException e) {
+		} catch (DataBaseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.toString());
 		}
 	}
 	
-	public void testFind() throws DatabaseException {
+	public void testFind() throws DataBaseException {
        try{
            User user = dao.find(ID);
            assertNotNull(user);
-       } catch (DatabaseException e){
+       } catch (DataBaseException e){
            e.printStackTrace();
            fail(e.toString());
        }
 
     }
 	
-	public void testUpdate() throws DatabaseException {
+	public void testUpdate() throws DataBaseException {
         User testUpdateUserLN = new User(ID, MY_FIRST_NAME, MY_LAST_NAME, new Date());
         dao.create(testUpdateUserLN);
         testUpdateUserLN.setLastName(UPDATED_MY_LAST_NAME);
@@ -94,19 +94,19 @@ public class HsqldbUserDaoTest extends DatabaseTestCase {
         assertEquals(testUpdateUserLN.getLastName(), updatedUser.getLastName());
     }
 	
-	public void testDelete() throws DatabaseException {
+	public void testDelete() throws DataBaseException {
         User user = new User();
         user.setId(DELETE_USER_ID);
         try {
             dao.delete(user);
             dao.find(DELETE_USER_ID); 
             fail(); 
-        } catch (DatabaseException e) {
+        } catch (DataBaseException e) {
             assert(e.getMessage().contains(DELETE_USER_ID.toString()));
         }
 
     }
-	private User createUser() {
+	 private User createUser() {
         User user = new User();
         user.setId(ID);
         user.setFirstName(MY_FIRST_NAME);
