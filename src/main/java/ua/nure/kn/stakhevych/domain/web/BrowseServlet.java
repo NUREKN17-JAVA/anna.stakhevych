@@ -67,7 +67,7 @@ public class BrowseServlet extends HttpServlet {
 			req.getRequestDispatcher("/browse.jsp").forward(req,resp);
 			return;
 		}
-		req.getRequestDispatcher("/delete").forward(req,resp);
+		req.getRequestDispatcher("/delete.jsp").forward(req,resp);
 	}
 
 	private void edit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
