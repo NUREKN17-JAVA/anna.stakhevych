@@ -14,6 +14,11 @@ public class UserTabelModel extends AbstractTableModel {
 	private static final String[] COLUMN_NAME = {Messages.getString("UserTabelModel.id"), Messages.getString("UserTabelModel.first_name"), Messages.getString("UserTabelModel.last_name")}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	private static final Class[] COLUMN_CLASSES = {Long.class, String.class, String.class};
 	private List users = null;
+	
+	public void UserTableModel() {
+		this.users = null;
+	}
+	
 	public UserTabelModel(Collection users){
 		this.users = new ArrayList(users);
 	}
@@ -54,6 +59,14 @@ public class UserTabelModel extends AbstractTableModel {
 		// TODO Auto-generated method stub
 		return (User) users.get(rowIndex);
 
+	}
+	
+	public void clearUsers() {
+		this.users = new ArrayList();
+	}
+	
+	public void addUsers(Collection users) {
+		this.users.addAll(users);
 	}
 
 }
