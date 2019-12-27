@@ -9,18 +9,34 @@ import java.util.Calendar;
 import java.util.Date;
 
 
-
-
 public class User {
 
+	@Override
+	public int hashCode() {
+		if(this.getId() == null){
+			return 0;
+			}
+		return this.getId().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+		if(this == obj){
+			return true;
+		}
+		if(this.getId() == null && ((User)obj).getId()==null){
+			return true;
+		}
+		return this.getId().equals(((User)obj).getId());
+	}
 	private Long id ;
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
     
-	
-    public User() {
-    }
 	
 	public User(Long id, String firstName, String lastName, Date dateOfBirth) {
 		// TODO Auto-generated constructor stub
@@ -28,6 +44,15 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
+    }
+	
+	public User(String firstName, String lastName, Date dateOfBirth) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.dateOfBirth = dateOfBirth;
+	}
+	
+	public User() {
     }
 	
 	public Long getId() {

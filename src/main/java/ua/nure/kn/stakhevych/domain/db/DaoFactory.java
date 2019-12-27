@@ -7,44 +7,73 @@ import java.util.Properties;
 
 import javax.management.RuntimeErrorException;
 
-public class DaoFactory {
-	private static final String USER_DAO = "dao.ua.nure.kn.stakhevych.domain.db.UserDao";
-	private final Properties properties;
+public abstract class DaoFactory {
 	
-	private final static DaoFactory INSTANCE = new DaoFactory();
+	private static final String SETTING_PROPERTIES = "settings.properties";
+
+	protected static final String USER_DAO = "dao.ua.nure.kn.stakhevych.domain.db.UserDao";
+	private static final String DAO_FACTORY = "dao.factory";
 	
-	public static DaoFactory getInstance() {
-		return INSTANCE;
-	}
+	protected static Properties properties;
 	
-	private DaoFactory() {
+	private static DaoFactory instance;
+	
+	
+	protected DaoFactory() {		
 		properties = new Properties();
 		try {
-			properties.load(getClass().getClassLoader().getResourceAsStream("settings.properties"));
+			properties.load(getClass().getClassLoader().getResourceAsStream(SETTING_PROPERTIES));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			throw new RuntimeException(e);
 		}
 	}
 	
-	private ConnectionFactory getConnectionFactory() {
-		String user = properties.getProperty("connection.user");
-		String password = properties.getProperty("connection.password");
-		String url = properties.getProperty("connection.url");
-		String driver = properties.getProperty("connection.driver");
-		return new ConnectionFactoryImpl(driver, url, user, password);
+	static{
+    	properties = new Properties();
+        try {
+           properties.load(DaoFactory.class.getClassLoader().getResourceAsStream(SETTING_PROPERTIES));
+	} catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+}
+	
+	public static synchronized DaoFactory getInstance() {
+		if (instance == null){
+			Class factoryClass;
+	    		try {
+	    		factoryClass = Class.forName(properties.getProperty(DAO_FACTORY));
+				instance = (DaoFactory) factoryClass.newInstance();
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+	   	}
+	       return instance;
 	}
 	
-	public UserDao getUserDao() {
-		UserDao result = null;
-		try {
-			Class clazz = Class.forName(properties.getProperty(USER_DAO));
-			result = (UserDao) clazz.newInstance();
-			result.setConnectionFactory(getConnectionFactory());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			throw new RuntimeException(e);
-		}
-		return result;
+	/*
+	protected DaoFactory() {
+		
 	}
+	
+	public static void init(Properties prop){
+		properties = prop;
+		instance = null;
+	}
+	
+	protected ConnectionFactory getConnectionFactory() {
+		return new ConnectionFactoryImpl(properties);
+	}
+	
+	public abstract UserDao getUserDao(); */
+
+	public static void init(Properties prop) {
+		properties = prop;
+		instance = null;
+	}
+	
+	protected ConnectionFactory getConnectionFactory() {
+		return new ConnectionFactoryImpl(properties);
+	}
+	
+	public abstract UserDao getUserDao();
 }
